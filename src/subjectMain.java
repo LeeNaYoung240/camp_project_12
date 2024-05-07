@@ -2,7 +2,7 @@ import java.util.Scanner;
 import subject.Subject;
 import subject.SubjectList;
 
-public class Main {
+public class subjectMain {
     // 인덱스 타입 정의
     private static final String INDEX_TYPE_SUBJECT = "SJ";
     private static final String INDEX_TYPE_STUDENT = "ST";
