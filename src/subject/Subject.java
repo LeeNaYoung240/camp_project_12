@@ -1,12 +1,4 @@
 package subject;
-<<<<<<< HEAD
-=======
-
-public class Subject {
-    private int subjectId;
-    private String subjectName;
-    private int subjectType;
->>>>>>> 17b057c999d5b19e78fde14ca4c26ab47901a91f
 
 public class Subject {
     private final int subjectId;
