@@ -7,6 +7,7 @@ import student.Intro;
 import student.Student;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -75,22 +76,26 @@ public class Main {
             System.out.println("                      3. 프로그램 종료");
             System.out.println("=============================================================");
             System.out.print("                   번호를 선택하세요 : ");
+            try{
+                int mainNum = sc.nextInt();
+                sc.nextLine();
 
-            int mainNum = sc.nextInt();
-            sc.nextLine();
-
-            switch (mainNum) {
-                case 1 -> displayStudent();
-                case 2 -> displayScore();
-                case 3 -> {
-                    System.out.println("프로그램을 종료합니다.");
-                    System.exit(0);
-                }
-                default -> System.out.println("잘못된 선택입니다. 다시 선택해주세요.");
+                switch (mainNum) {
+                    case 1 -> displayStudent();
+                    case 2 -> displayScore();
+                    case 3 -> {
+                        System.out.println("프로그램을 종료합니다.");
+                        System.exit(0);
+                      }
+                    default ->  System.out.println("\n         ❗ 선택지 범위를 벗어났습니다 ··· 다시 선택해주세요.");
+                    }
+                    check = true;
+            } catch(InputMismatchException e){
+                System.out.println("\n         ❗ 잘못된 입력입니다 ··· 숫자를 입력해주세요.");
+                sc.nextLine();
+                check = true;
             }
-
         }
-
     }
 
 
@@ -102,20 +107,28 @@ public class Main {
 
         check = true;
 
+        int studentNum;
+
         while (checkDisplayStudent) {
 
             System.out.println("\n                      1. 학생 등록");
             System.out.println("                      2. 학생 조회");
             System.out.println("                      3. 학생 수정");
             System.out.println("                      4. 학생 삭제");
-            System.out.println("                      5. 이전으로");
+            System.out.println("                      5. 학생 · 점수 관리 Menu");
             System.out.println("=============================================================");
             System.out.print("                   번호를 선택하세요 : ");
 
-            int studentNum = sc.nextInt();
-            sc.nextLine();
+            try {
+                studentNum = sc.nextInt();
+                sc.nextLine();
+                System.out.println();
+            } catch (InputMismatchException e) {
+                System.out.println("\n❗ 잘못된 입력입니다. 숫자를 입력해주세요.");
+                sc.nextLine();
+                continue; // 다시 반복문 처음으로 이동
+            }
             System.out.println();
-
             switch (studentNum) {
                 case 1:
                     validStatus = false;
@@ -130,7 +143,7 @@ public class Main {
                         if (status.equalsIgnoreCase("Green") || status.equalsIgnoreCase("Red") || status.equalsIgnoreCase("Yellow")) {
                             validStatus = true;
                         } else {
-                            System.out.println("선택지에 없는 입력입니다. 다시 입력하세요.");
+                            System.out.println("❗ 선택지에 없는 입력입니다. 다시 입력하세요.");
                         }
                     }
 
@@ -139,14 +152,16 @@ public class Main {
                     List<String> choiceSelections = new ArrayList<>();
 
                     while (true) {
-                        System.out.println("필수 과목을 선택하세요 (3개 이상, 공백으로 구분하여 입력)");
+                        System.out.println("🤏🏻 필수 과목 선택 (3개 이상, 공백으로 구분하여 입력)");
                         subjectDataStore.inquiryDataByType(SUBJECT_TYPE_MANDATORY);
+                        System.out.println("            --------------------------------");
                         System.out.print("입력 :  ");
                         String mandatoryChoiceStr = sc.nextLine();
                         String[] mandatoryChoicesStr = mandatoryChoiceStr.split(" ");
 
                         if (mandatoryChoicesStr.length < 3) {
-                            System.out.println("최소 3개의 과목을 선택해야 합니다. 다시 선택하세요.");
+                            System.out.println("❗ 최소 3개의 과목을 선택해야 합니다. 다시 선택하세요.");
+                            System.out.println("-------------------------------------------------------------");
                             continue;
                         }
 
@@ -159,14 +174,17 @@ public class Main {
                     }
 
                     while (true) {
-                        System.out.println("선택 과목을 선택하세요 (2개 이상, 공백으로 구분하여 입력)");
+                        System.out.println("🤏🏻 선택 과목 선택 (2개 이상, 공백으로 구분하여 입력)");
                         subjectDataStore.inquiryDataByType(SUBJECT_TYPE_CHOICE);
+                        System.out.println("            --------------------------------");
                         System.out.print("입력 :  ");
                         String choiceChoiceStr = sc.nextLine();
                         String[] choiceChoicesStr = choiceChoiceStr.split(" ");
 
                         if (choiceChoicesStr.length < 2) {
-                            System.out.println("최소 2개의 과목을 선택해야 합니다. 다시 선택하세요.");
+                            System.out.println("❗ 최소 2개의 과목을 선택해야 합니다. 다시 선택하세요.");
+                            System.out.println("-------------------------------------------------------------");
+
                             continue;
                         }
 
@@ -191,11 +209,146 @@ public class Main {
                     System.out.print("-------------------------------------------------------------");
                     break;
                 case 2:
-                    studentDataStore.inquiryData();
+                    while (true) {
+                        System.out.println("1. 전체 학생 조회");
+                        System.out.println("2. 상태별 학생 조회");
+                        System.out.print("번호를 선택하세요: ");
+                        try {
+                            int choice = sc.nextInt();
+                            sc.nextLine();
+                            switch (choice) {
+                                case 1:
+                                    studentDataStore.inquiryData();
+                                    break;
+                                case 2:
+                                    while (true) {
+                                        System.out.print("조회할 학생의 상태를 입력하세요 (Green, Red, Yellow): ");
+                                        String status_inquiry = sc.nextLine();
+                                        if (status_inquiry.equalsIgnoreCase("Green") || status_inquiry.equalsIgnoreCase("Red") || status_inquiry.equalsIgnoreCase("Yellow")) {
+                                            studentDataStore.displayStudentsByStatus(status_inquiry);
+                                            break; // 유효한 입력이 들어온 경우 반복문 종료
+                                        } else {
+                                            System.out.println("❗ 유효하지 않은 입력입니다. 다시 입력하세요.");
+                                        }
+                                    }
+                                    break;
+                                default:
+                                    System.out.println("❗ 선택지에 없는 입력입니다. 다시 입력하세요.");
+                                    continue; // 다시 반복문 처음으로 이동
+                            }
+                            break; // 유효한 선택이 입력된 경우 반복문 종료
+                        } catch (InputMismatchException e) {
+                            System.out.println("\n❗ 잘못된 입력입니다. 숫자를 입력해주세요.");
+                            sc.nextLine(); // 버퍼 비우기
+                        }
+                    }
                     break;
                 case 3:
                     //학생 수정
-                    while (true) {
+                    if (studentDataStore.getDataStore().isEmpty()) {
+                        System.out.println("❗ 등록된 학생이 없습니다.");
+                    }
+                    else {
+                        while (true) {
+                            int studentIdToChange;
+                            Student s;
+                            System.out.println("===================== 등록된 학생 목록 =========================");
+                            for (int i = 0; i < studentDataStore.getDataStore().size(); i++) {
+                                s = studentDataStore.getDataStore().get(i);
+                                System.out.println("📌 [" + s.getStudentId() + "] " + s.getStudentName());
+                            }
+                            System.out.println();
+
+                            try {
+                                System.out.print("변경할 학생의 고유번호를 입력하세요 (메인 메뉴 - 0 입력): ");
+                                studentIdToChange = sc.nextInt();
+                                sc.nextLine();
+                            } catch (InputMismatchException e) {
+                                System.out.println("\n❗ 잘못된 입력입니다. 숫자를 입력해주세요.");
+                                sc.nextLine();
+                                continue; // 다시 반복문 처음으로 이동
+                            }
+                            if (studentIdToChange == 0) {
+                                break; // 메인 메뉴로 돌아가기
+                            }
+
+                            // 입력한 학생의 고유번호와 일치하는 학생 찾기
+                            Student selectedStudent = null;
+                            for (Student student2 : studentDataStore.getDataStore()) {
+                                if (student2.getStudentId() == studentIdToChange) {
+                                    selectedStudent = student2;
+                                    break;
+                                }
+                            }
+
+                            if (selectedStudent == null) {
+                                System.out.println("해당하는 고유번호의 학생을 찾을 수 없습니다.");
+                                continue; // 다시 입력 받기
+                            }
+
+                            // 선택된 학생의 정보 출력
+                            selectedStudent.studentInquiry();
+
+                            System.out.println("\n===================== 변경 사항 선택 =========================");
+                            System.out.println("                   1. 학생 이름 변경 ");
+                            System.out.println("                   2. 학생 상태 변경  (Green, Red, Yellow) ");
+                            System.out.println("                   3. 메인 메뉴 ");
+                            System.out.print("선택: ");
+                            int choice2 = sc.nextInt();
+                            sc.nextLine();
+
+                            switch (choice2) {
+
+                                case 1:
+                                    System.out.print("이름을 변경하시겠습니까? (Y/N): ");
+                                    String changeName = sc.nextLine();
+
+                                    if (changeName.equalsIgnoreCase("Y")) {
+                                        System.out.print("새로운 이름 입력: ");
+                                        String newName = sc.nextLine();
+                                        selectedStudent.setName(newName);
+                                        System.out.println("이름이 변경되었습니다.");
+                                    }
+                                    break;
+                                case 2:
+                                    System.out.print("상태를 변경하시겠습니까? (Y/N): ");
+                                    String changeStatus = sc.nextLine();
+
+                                    if (changeStatus.equalsIgnoreCase("Y")) {
+                                        validStatus = false;
+                                        while (!validStatus) {
+                                            System.out.print("새로운 상태 입력 (Green, Red, Yellow) : ");
+                                            String newStatus = sc.nextLine();
+                                            if (newStatus.equalsIgnoreCase("Green") || newStatus.equalsIgnoreCase("Red") || newStatus.equalsIgnoreCase("Yellow")) {
+                                                validStatus = true;
+                                            } else {
+                                                System.out.println("❗ 잘못된 입력입니다. 다시 입력하세요.");
+                                            }
+                                            selectedStudent.setStatus(newStatus);
+                                            System.out.println("상태가 변경되었습니다.");
+                                        }
+                                    }
+                                    break;
+                                case 3:
+                                    System.out.println("메인 메뉴로 돌아갑니다.");
+                                    break;
+                                default:
+                                    System.out.println("❗ 선택지에 없는 입력입니다. 다시 입력하세요.");
+                            }
+                            // 메인 메뉴로 돌아가는 조건
+                            if (choice2 == 3) {
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case 4:
+                    if (studentDataStore.getDataStore().isEmpty()) {
+                        System.out.println("❗ 등록된 학생이 없습니다.");
+                    }
+                    else {
+                        // 학생 삭제
+                        int RemoveId;
                         Student s;
                         System.out.println("===================== 등록된 학생 목록 =========================");
                         for (int i = 0; i < studentDataStore.getDataStore().size(); i++) {
@@ -203,107 +356,40 @@ public class Main {
                             System.out.println("📌 [" + s.getStudentId() + "] " + s.getStudentName());
                         }
                         System.out.println();
-
-                        System.out.print("변경할 학생의 고유번호를 입력하세요 (메인 메뉴로 돌아가려면 0 입력): ");
-                        int studentIdToChange = sc.nextInt();
-                        sc.nextLine();
-
-                        if (studentIdToChange == 0) {
-                            break; // 메인 메뉴로 돌아가기
-                        }
-
-                        // 입력한 학생의 고유번호와 일치하는 학생 찾기
-                        Student selectedStudent = null;
-                        for (Student student2 : studentDataStore.getDataStore()) {
-                            if (student2.getStudentId() == studentIdToChange) {
-                                selectedStudent = student2;
-                                break;
-                            }
-                        }
-
-                        if (selectedStudent == null) {
-                            System.out.println("해당하는 고유번호의 학생을 찾을 수 없습니다.");
-                            continue; // 다시 입력 받기
-                        }
-
-                        // 선택된 학생의 정보 출력
-                        System.out.println("<<선택한 학생 정보 ↓>> ");
-                        System.out.println();
-                        selectedStudent.studentInquiry();
-
-                        System.out.println("\n===================== 변경 사항 선택 =========================");
-                        System.out.println("1. 학생 이름 변경 ");
-                        System.out.println("2. 학생 상태 변경  (Green, Red, Yellow) ");
-                        System.out.println("3. 메인 메뉴 ");
-                        System.out.print("선택: ");
-                        int choice2 = sc.nextInt();
-                        sc.nextLine();
-
-                        switch (choice2) {
-
-                            case 1:
-                                System.out.print("이름을 변경하시겠습니까? (Y/N): ");
-                                String changeName = sc.nextLine();
-
-                                if (changeName.equalsIgnoreCase("Y")) {
-                                    System.out.print("새로운 이름 입력: ");
-                                    String newName = sc.nextLine();
-                                    selectedStudent.setName(newName);
-                                    System.out.println("이름이 변경되었습니다.");
-                                }
-                                break;
-                            case 2:
-                                System.out.print("상태를 변경하시겠습니까? (Y/N): ");
-                                String changeStatus = sc.nextLine();
-
-                                if (changeStatus.equalsIgnoreCase("Y")) {
-                                    validStatus = false;
-                                    while (!validStatus) {
-                                        System.out.print("새로운 상태 입력 (Green, Red, Yellow) : ");
-                                        String newStatus = sc.nextLine();
-                                        if (newStatus.equalsIgnoreCase("Green") || newStatus.equalsIgnoreCase("Red") || newStatus.equalsIgnoreCase("Yellow")) {
-                                            validStatus = true;
-                                        } else {
-                                            System.out.println("잘못된 입력입니다. 다시 입력하세요.");
-                                        }
-                                        selectedStudent.setStatus(newStatus);
-                                        System.out.println("상태가 변경되었습니다.");
+                        while (true) {
+                            try {
+                                System.out.print("삭제할 학생의 고유번호를 입력하세요 : ");
+                                RemoveId = sc.nextInt();
+                                sc.nextLine();
+                                boolean validId = false;
+                                for (Student student2 : studentDataStore.getDataStore()) {
+                                    if (student2.getStudentId() == RemoveId) {
+                                        validId = true;
+                                        break;
                                     }
                                 }
+                                if (!validId) {
+                                    System.out.println("\n❗ 유효하지 않은 학생 고유번호입니다. 다시 입력해주세요.");
+                                    continue; // 다시 반복문 처음으로 이동
+                                }
                                 break;
-                            case 3:
-                                System.out.println("메인 메뉴로 돌아갑니다.");
-                                break;
-                            default:
-                                System.out.println("잘못된 선택입니다. 다시 선택해주세요.");
-                        }
-                        // 메인 메뉴로 돌아가는 조건
-                        if (choice2 == 3) {
-                            break;
-                        }
-                    }
-                    break;
-                case 4:
-                    // 학생 삭제
-                    Student s;
-                    System.out.println("===================== 등록된 학생 목록 =========================");
-                    for (int i = 0; i < studentDataStore.getDataStore().size(); i++) {
-                        s = studentDataStore.getDataStore().get(i);
-                        System.out.println("📌 [" + s.getStudentId() + "] " + s.getStudentName());
-                    }
-                    System.out.println();
 
-                    System.out.print("삭제할 학생의 이름을 입력하세요 : ");
-                    String RemoveName = sc.nextLine();
-                    studentDataStore.remove(RemoveName);
+                            } catch (InputMismatchException e) {
+                                System.out.println("\n❗ 잘못된 입력입니다. 숫자를 입력해주세요.");
+                                sc.nextLine();
+
+                            }
+                        }
+                        studentDataStore.remove(RemoveId);
+                    }
                     break;
                 case 5:
-                    System.out.println("이전으로 돌아갑니다.");
+                    System.out.println("이전으로 돌아갑니다 ··· ");
                     checkDisplayStudent = false;
 
                     break;
                 default:
-                    System.out.println("잘못된 선택입니다. 다시 선택해주세요.");
+                    System.out.println("❗ 선택지에 없는 입력입니다. 다시 입력하세요.");
             }
 
         }
@@ -326,9 +412,23 @@ public class Main {
             System.out.println("=============================================================");
             System.out.print("                   번호를 선택하세요 : ");
 
-            int scoreNum = sc.nextInt();
-            sc.nextLine();
-            System.out.println();
+            int scoreNum;
+            try {
+                scoreNum = sc.nextInt();
+                sc.nextLine();
+                System.out.println();
+            } catch (InputMismatchException e) {
+                System.out.println("잘못된 입력입니다. 숫자로 입력해주세요.");
+                sc.nextLine();
+                continue;
+            }
+
+            int studentId;   // 학생 ID 저장용 변수
+            int subjectId;  // 과목 ID 저장용 변수
+            int scoreValue;  // 점수 저장용 변수
+            int round;  // 회차 저장용 변수
+            String StudentName = "";  // 학생 이름 저장용 변수
+            String SubjectName = "";  // 과목명 저장용 변수
 
             switch (scoreNum) {
                 case 1:  // 점수 등록
@@ -341,45 +441,92 @@ public class Main {
                     System.out.println();
 
                     // 점수 등록할 student ID 입력
-                    System.out.println("점수를 등록할 수강생의 고유번호를 입력해주세요.");
-                    int addStudentId = sc.nextInt();
+                    while (true) {
+                        try {
+                            System.out.println("점수를 등록할 수강생의 고유번호를 입력해주세요.");
+                            studentId = sc.nextInt();
+                            sc.nextLine();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.println("잘못된 입력입니다. 숫자로 입력해주세요.");
+                            sc.nextLine();
+                        }
+                    }
 
                     // 입력된 student ID가 등록된 ID 인지 확인
-                    boolean addVerifiationId = false;
+                    boolean verifyId = false;
                     for (Student student2 : studentDataStore.getDataStore()) {
-                        if (student2.getStudentId() == addStudentId) {
-                            addVerifiationId = true;
+                        if (student2.getStudentId() == studentId) {
+                            verifyId = true;
                             break;
                         }
                     }
 
                     // ID가 유효하지 않을 경우 continue
-                    if(!addVerifiationId) {
+                    if (!verifyId) {
                         System.out.println("등록되지 않은 ID 입니다. 확인 후 입력해주세요.");
                         break;
                     }
 
-                    // 점수 등록 가능한 과목 안내
-                    subjectDataStore.inquiryData();
+
+                    // 학생 이름 저장
+                    for (int i = 0; i < studentDataStore.getDataStore().size(); i++) {
+                        Student student1 = studentDataStore.getDataStore().get(i);
+                        if (student1.getStudentId() == studentId) {
+                            StudentName = student1.getStudentName();
+                            break;
+                        }
+                    }
+
+                    // 수강중인 과목 안내
+                    System.out.println(StudentName + " 수강생의 수강중인 과목");
+                    for (int i = 0; i < studentDataStore.getDataStore().size(); i++) {
+                        Student student = studentDataStore.getDataStore().get(i);
+                        if (student.getStudentId() == studentId) {
+                            for (int j = 0; j < subjectDataStore.getDataStore().size(); j++) {
+                                Subject subject = subjectDataStore.getDataStore().get(j);
+                                for (int k = 0; k < student.getSubjectList().size(); k++) {
+                                    if (subject.getSubjectName().equals(student.getSubjectList().get(k))) {
+                                        String subjectType = "";
+                                        if (subject.getSubjectType() == 1) {
+                                            subjectType = "필수";
+                                        } else if (subject.getSubjectType() == 2) {
+                                            subjectType = "선택";
+                                        }
+                                        System.out.println("과목 코드 : " + subject.getSubjectId() + " / 과목명 : " + subject.getSubjectName() + " / 과목타입 : " + subjectType);
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     // 점수 등록할 subject ID 입력
-                    System.out.println("과목 코드를 입력해주세요.");
-                    int addSubjectId = sc.nextInt();
-                    sc.nextLine();
+                    while (true) {
+                        System.out.println("과목 코드를 입력해주세요.");
+                        try {
+                            subjectId = sc.nextInt();
+                            sc.nextLine();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.println("잘못된 입력입니다. 숫자로 입력해주세요.");
+                            sc.nextLine();
+                        }
+                    }
 
                     // 입력된 학생 ID와 과목 ID를 기준으로 student 객체 필드에 입력된 과목 목록에 subject 이름이 있는지 검사
+                    int tempStudentId = studentId;
                     boolean isMatched = studentDataStore.getDataStore().stream()
-                            .filter(el1 -> el1.getStudentId() == addStudentId)
+                            .filter(el1 -> el1.getStudentId() == tempStudentId)
                             .flatMap(el2 -> el2.getSubjectList().stream())
                             .anyMatch(studentSubject ->
                                     subjectDataStore.getDataStore().stream()
-                                            .filter(el3 -> el3.getSubjectId()==addSubjectId)
+                                            .filter(el3 -> el3.getSubjectId() == tempStudentId)
                                             .anyMatch(dataStoreSubject ->
                                                     studentSubject.equals(dataStoreSubject.getSubjectName())
                                             )
                             );
 
-                    // student 객체의 subjectList 에 등록되지 않은 과목일 경우 continue
+                    // student 객체의 subjectList 에 등록되지 않은 과목일 경우 break
                     if (!isMatched) {
                         System.out.println("수강중인 과목이 아닙니다. 확인 후 입력해주세요.");
                         break;
@@ -389,60 +536,66 @@ public class Main {
                     int subjectType = 0;
                     for (int i = 0; i < subjectDataStore.getDataStore().size(); i++) {
                         Subject subject = subjectDataStore.getDataStore().get(i);
-                        if (subject.getSubjectId() == addSubjectId) {
+                        if (subject.getSubjectId() == subjectId) {
                             subjectType = subject.getSubjectType();
                             break;
                         }
                     }
 
-                    // 정보제공용 학생/과목 이름 변수 저장
-                    String addInformStudentName = "";
-                    String addInformSubjectName = "";
-
-                    // 학생 이름 저장
-                    for(int i=0; i < studentDataStore.getDataStore().size(); i++){
-                        Student student1 = studentDataStore.getDataStore().get(i);
-                        if (student1.getStudentId() == addStudentId) {
-                            addInformStudentName = student1.getStudentName();
-                            break;
-                        }
-                    }
-
-                    // 과목 이름 저장
-                    for(int i=0; i < subjectDataStore.getDataStore().size(); i++) {
+                        // 과목 이름 저장
+                    for (int i = 0; i < subjectDataStore.getDataStore().size(); i++) {
                         Subject subject = subjectDataStore.getDataStore().get(i);
-                        if (subject.getSubjectId() == addSubjectId) {
-                            addInformSubjectName = subject.getSubjectName();
+                        if (subject.getSubjectId() == subjectId) {
+                            SubjectName = subject.getSubjectName();
                             break;
                         }
                     }
+
 
                     // 입력받은 학생 ID, 과목 ID를 통해 기 입력 데이터 존재여부 확인
-                    Score tempScore = scoreDataStore.getScoreList(addStudentId, addSubjectId);
+                    Score tempScore = scoreDataStore.getScoreList(studentId, subjectId);
 
                     // 기 입역 데이터 존재여부에 따라 기존 데이터에 추가 저장 또는 새로운 Score 객체 생성 후 저장
                     if (tempScore != null) {    // 기 입력 데이터가 있는 경우
-                        System.out.println("========== " + addInformStudentName + " 수강생의 " + addInformSubjectName + " 과목 점수 등록현황 ==========");
-                        scoreDataStore.inquiryToScoreList(addStudentId, addSubjectId);
+                        System.out.println("========== " + StudentName + " 수강생의 " + SubjectName + " 과목 점수 등록현황 ==========");
+                        scoreDataStore.inquiryToScoreList(studentId, subjectId);
 
-                        System.out.println("등록할 점수의 시험회차를 입력해주세요.");
-                        int round = sc.nextInt();
+                        if (tempScore.getScoreArraySize() < 10) {
+                            System.out.println(tempScore.getScoreArraySize() + 1 + "회차 점수를 입력해주세요");
+                        } else {
+                            System.out.println("점수는 10회차까지만 등록할 수 있습니다.");
+                            break;
+                        }
+                        while (true) {
+                            try {
+                                scoreValue = sc.nextInt();
+                                sc.nextLine();
+                                break;
+                            } catch (InputMismatchException e) {
+                                System.out.println("잘못된 입력입니다. 숫자로 입력해주세요.");
+                                sc.nextLine();
+                            }
+                        }
 
-                        System.out.println("점수를 입력해주세요");
-                        int scoreValue = sc.nextInt();
-
-                        tempScore.scoreAdd(round, scoreValue);
+                        tempScore.scoreAdd(scoreValue);
                     } else {    // 기 입력 데이터가 없는 경우
-                        System.out.println(addInformStudentName + " 수강생의 " + addInformSubjectName + " 과목에 등록되어있는 점수가 없습니다. 1회차부터 입력해주세요.");
-                        System.out.println("등록할 점수의 시험회차를 입력해주세요.");
-                        int round = sc.nextInt();
+                        System.out.println(StudentName + " 수강생의 " + SubjectName + " 과목에 등록되어있는 점수가 없습니다.");
 
-                        System.out.println("점수를 입력해주세요");
-                        int scoreValue = sc.nextInt();
+                        while (true) {
+                            try {
+                                System.out.println("1회차 점수를 입력해주세요");
+                                scoreValue = sc.nextInt();
+                                sc.nextLine();
+                                break;
+                            } catch (InputMismatchException e) {
+                                System.out.println("잘못된 입력입니다. 숫자로 입력해주세요.");
+                                sc.nextLine();
+                            }
+                        }
 
-                        Score score = new Score(addStudentId, addSubjectId, subjectType);
+                        Score score = new Score(studentId, subjectId, subjectType);
 
-                        score.scoreAdd(round, scoreValue);
+                        score.scoreAdd(scoreValue);
                         scoreDataStore.addData(score);
                     }
                     break;
@@ -455,14 +608,22 @@ public class Main {
                     }
                     System.out.println();
 
-                    System.out.println("점수를 수정할 수강생의 고유번호를 입력해주세요.");
-                    int modificationStudentId = sc.nextInt();
-                    sc.nextLine();
+                    while (true) {
+                        try {
+                            System.out.println("점수를 수정할 수강생의 고유번호를 입력해주세요.");
+                            studentId = sc.nextInt();
+                            sc.nextLine();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.println("잘못된 입력입니다. 숫자로 입력해주세요.");
+                            sc.nextLine();}
+                    }
+
 
                     // 입력된 student ID가 등록된 ID 인지 확인
                     boolean modifyVerificationId = false;
                     for (Student student2 : studentDataStore.getDataStore()) {
-                        if (student2.getStudentId() == modificationStudentId) {
+                        if (student2.getStudentId() == studentId) {
                             modifyVerificationId = true;
                             break;
                         }
@@ -474,20 +635,57 @@ public class Main {
                         break;
                     }
 
-                    // 점수 수정할 과목 안내
-                    subjectDataStore.inquiryData();
+                    // 학생 이름 저장
+                    for(int i=0; i < studentDataStore.getDataStore().size(); i++){
+                        Student student1 = studentDataStore.getDataStore().get(i);
+                        if (student1.getStudentId() == studentId) {
+                            StudentName = student1.getStudentName();
+                            break;
+                        }
+                    }
 
-                    System.out.println("수정할 과목 코드를 입력해주세요.");
-                    int modificationSubjectId = sc.nextInt();
-                    sc.nextLine();
+                    // 수강중인 과목 안내
+                    System.out.println(StudentName + " 수강생의 수강중인 과목");
+                    for (int i=0; i < studentDataStore.getDataStore().size(); i++){
+                        Student student = studentDataStore.getDataStore().get(i);
+                        if(student.getStudentId() == studentId) {
+                            for (int j=0; j < subjectDataStore.getDataStore().size(); j++) {
+                                Subject subject = subjectDataStore.getDataStore().get(j);
+                                for (int k = 0; k < student.getSubjectList().size(); k++){
+                                    if (subject.getSubjectName().equals(student.getSubjectList().get(k))) {
+                                        String subjectType1 = "";
+                                        if (subject.getSubjectType() == 1) {
+                                            subjectType1 = "필수";
+                                        } else if (subject.getSubjectType() == 2) {
+                                            subjectType1 = "선택";
+                                        }
+                                        System.out.println("과목 코드 : " + subject.getSubjectId() + " / 과목명 : " + subject.getSubjectName() + " / 과목타입 : " + subjectType1);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    while (true) {
+                        try {
+                            System.out.println("수정할 과목 코드를 입력해주세요.");
+                            subjectId = sc.nextInt();
+                            sc.nextLine();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.println("잘못된 입력입니다. 숫자로 입력해주세요.");
+                            sc.nextLine();
+                        }
+                    }
 
                     // 입력된 학생 ID와 과목 ID를 기준으로 student 객체 필드에 입력된 과목 목록에 subject 이름이 있는지 검사
+                    int tempStudentId2 = studentId;
                     boolean isMatched2 = studentDataStore.getDataStore().stream()
-                            .filter(el1 -> el1.getStudentId() == modificationStudentId)
+                            .filter(el1 -> el1.getStudentId() == tempStudentId2)
                             .flatMap(el2 -> el2.getSubjectList().stream())
                             .anyMatch(studentSubject ->
                                     subjectDataStore.getDataStore().stream()
-                                            .filter(el3 -> el3.getSubjectId()==modificationSubjectId)
+                                            .filter(el3 -> el3.getSubjectId()==tempStudentId2)
                                             .anyMatch(dataStoreSubject ->
                                                     studentSubject.equals(dataStoreSubject.getSubjectName())
                                             )
@@ -499,42 +697,55 @@ public class Main {
                         break;
                     }
 
-                    // 정보제공용 학생/과목 이름 변수 저장
-                    String modifyInformStudentName = "";
-                    String modifyInformSubjectName = "";
-
-                    for(int i=0; i < studentDataStore.getDataStore().size(); i++){
-                        Student student1 = studentDataStore.getDataStore().get(i);
-                        if (student1.getStudentId() == modificationStudentId) {
-                            modifyInformStudentName = student1.getStudentName();
-                            break;
-                        }
-                    }
-
+                    // 과목명 저장
                     for(int i=0; i < subjectDataStore.getDataStore().size(); i++) {
                         Subject subject = subjectDataStore.getDataStore().get(i);
-                        if (subject.getSubjectId() == modificationSubjectId) {
-                            modifyInformSubjectName = subject.getSubjectName();
+                        if (subject.getSubjectId() == subjectId) {
+                            SubjectName = subject.getSubjectName();
                             break;
                         }
                     }
 
                     // 입력받은 학생 ID, 과목 ID를 통해 기 입력 데이터 존재여부 확인
-                    Score tempScore2 = scoreDataStore.getScoreList(modificationStudentId, modificationSubjectId);
+                    Score tempScore2 = scoreDataStore.getScoreList(studentId, subjectId);
 
                     // 기 입역 데이터 존재여부에 따라 기존 데이터에 추가 저장 또는 새로운 Score 객체 생성 후 저장
                     if (tempScore2 != null) {    // 기 입력 데이터가 있는 경우
-                        System.out.println("========== " + modifyInformStudentName + " 수강생의 " + modifyInformSubjectName + " 과목 점수 등록현황 ==========");
-                        scoreDataStore.inquiryToScoreList(modificationStudentId,modificationSubjectId);
-                        System.out.println("수정할 점수의 시험회차를 입력해주세요.");
-                        int round = sc.nextInt();
+                        System.out.println("========== " + StudentName + " 수강생의 " + SubjectName + " 과목 점수 등록현황 ==========");
+                        scoreDataStore.inquiryToScoreList(studentId,subjectId);
 
-                        System.out.println("수정하여 입력될 점수를 입력해주세요 (점수범위 : 0 ~ 100)");
-                        int scoreValue = sc.nextInt();
+                        while (true) {
+                            try {
+                                System.out.println("수정할 점수의 시험회차를 입력해주세요.");
+                                round = sc.nextInt();
+                                sc.nextLine();
+                                break;
+                            } catch (InputMismatchException e) {
+                                System.out.println("잘못된 입력입니다. 숫자로 입력해주세요.");
+                                sc.nextLine();
+                            }
+                        }
 
-                        tempScore2.setScore(modificationStudentId, modificationSubjectId, round, scoreValue);
+                        if (tempScore2.getScoreArraySize() < round) {
+                            System.out.println("등록되지 않은 회차입니다. 확인 후 입력해주세요.");
+                            break;
+                        }
+
+                        while (true) {
+                            try {
+                                System.out.println("수정하여 입력될 점수를 입력해주세요 (점수범위 : 0 ~ 100)");
+                                scoreValue = sc.nextInt();
+                                sc.nextLine();
+                                break;
+                            } catch (InputMismatchException e) {
+                                System.out.println("잘못된 입력입니다. 숫자로 입력해주세요.");
+                                sc.nextLine();
+                            }
+                        }
+
+                        tempScore2.setScore(studentId, subjectId, round, scoreValue);
                     } else {    // 기 입력 데이터가 없는 경우
-                        System.out.println(modifyInformStudentName + " 수강생의 " + modifyInformSubjectName + " 과목에 수정할 수 있는 데이터가 없습니다.");
+                        System.out.println(StudentName + " 수강생의 " + SubjectName + " 과목에 수정할 수 있는 데이터가 없습니다.");
                         break;
                     }
                     break;
@@ -549,14 +760,22 @@ public class Main {
                     System.out.println();
 
                     // 학생 ID 입력
-                    System.out.println("점수를 조회할 수강생의 고유번호를 입력해주세요.");
-                    int inquiryStudentId = sc.nextInt();
-                    sc.nextLine();
+                    while (true) {
+                        try {
+                            System.out.println("점수를 조회할 수강생의 고유번호를 입력해주세요.");
+                            studentId = sc.nextInt();
+                            sc.nextLine();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.println("잘못된 입력입니다. 숫자로 입력해주세요.");
+                            sc.nextLine();
+                        }
+                    }
 
                     // 입력된 student ID가 등록된 ID 인지 boolean 타입 변수에 결과 저장
                     boolean inquiryVerificationId = false;
                     for (Student student2 : studentDataStore.getDataStore()) {
-                        if (student2.getStudentId() == inquiryStudentId) {
+                        if (student2.getStudentId() == studentId) {
                             inquiryVerificationId = true;
                             break;
                         }
@@ -568,21 +787,58 @@ public class Main {
                         break;
                     }
 
-                    // 점수 조회할 과목 안내
-                    subjectDataStore.inquiryData();
+                    // 학생 이름 저장
+                    for(int i=0; i < studentDataStore.getDataStore().size(); i++){
+                        Student student1 = studentDataStore.getDataStore().get(i);
+                        if (student1.getStudentId() == studentId) {
+                            StudentName = student1.getStudentName();
+                            break;
+                        }
+                    }
+
+                    // 수강중인 과목 안내
+                    System.out.println(StudentName + " 수강생의 수강중인 과목");
+                    for (int i=0; i < studentDataStore.getDataStore().size(); i++){
+                        Student student = studentDataStore.getDataStore().get(i);
+                        if(student.getStudentId() == studentId) {
+                            for (int j=0; j < subjectDataStore.getDataStore().size(); j++) {
+                                Subject subject = subjectDataStore.getDataStore().get(j);
+                                for (int k=0; k < student.getSubjectList().size(); k++) {
+                                    if (subject.getSubjectName().equals(student.getSubjectList().get(k))) {
+                                        String subjectType1 = "";
+                                        if (subject.getSubjectType() == 1) {
+                                            subjectType1 = "필수";
+                                        } else if (subject.getSubjectType() == 2) {
+                                            subjectType1 = "선택";
+                                        }
+                                        System.out.println("과목 코드 : " + subject.getSubjectId() + " / 과목명 : " + subject.getSubjectName() + " / 과목타입 : " + subjectType1);
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     // 과목 코드 입력
-                    System.out.println("조회할 과목 코드를 입력해주세요.");
-                    int inquirySubjectId = sc.nextInt();
-                    sc.nextLine();
+                    while (true) {
+                        try {
+                            System.out.println("조회할 과목 코드를 입력해주세요.");
+                            subjectId = sc.nextInt();
+                            sc.nextLine();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.println("잘못된 입력입니다. 숫자로 입력해주세요.");
+                            sc.nextLine();
+                        }
+                    }
 
                     // 입력된 학생 ID와 과목 ID를 기준으로 student 객체 필드에 입력된 과목 목록에 subject 이름이 있는지 검사
+                    int tempStudentId3 = studentId;
                     boolean isMatched3 = studentDataStore.getDataStore().stream()
-                            .filter(el1 -> el1.getStudentId() == inquiryStudentId)
+                            .filter(el1 -> el1.getStudentId() == tempStudentId3)
                             .flatMap(el2 -> el2.getSubjectList().stream())
                             .anyMatch(studentSubject ->
                                     subjectDataStore.getDataStore().stream()
-                                            .filter(el3 -> el3.getSubjectId()==inquirySubjectId)
+                                            .filter(el3 -> el3.getSubjectId() == tempStudentId3)
                                             .anyMatch(dataStoreSubject ->
                                                     studentSubject.equals(dataStoreSubject.getSubjectName())
                                             )
@@ -594,31 +850,18 @@ public class Main {
                         break;
                     }
 
-                    // 정보제공용 학생/과목 이름 변수 저장
-                    String inquiryInformStudentName = "";
-                    String inquiryInformSubjectName = "";
-
-                    // 학생 이름 저장
-                    for(int i=0; i < studentDataStore.getDataStore().size(); i++){
-                        Student student1 = studentDataStore.getDataStore().get(i);
-                        if (student1.getStudentId() == inquiryStudentId) {
-                            inquiryInformStudentName = student1.getStudentName();
-                            break;
-                        }
-                    }
-
                     // 과목 이름 저장
                     for(int i=0; i < subjectDataStore.getDataStore().size(); i++) {
                         Subject subject = subjectDataStore.getDataStore().get(i);
-                        if (subject.getSubjectId() == inquirySubjectId) {
-                            inquiryInformSubjectName = subject.getSubjectName();
+                        if (subject.getSubjectId() == subjectId) {
+                            SubjectName = subject.getSubjectName();
                             break;
                         }
                     }
 
                     // 입력된 정보를 바탕으로 scoreList 에서 inquiry 메서드 호출
-                    System.out.println("========== " + inquiryInformStudentName + " 수강생의 " + inquiryInformSubjectName + " 과목 점수 조회 결과 ==========" );
-                    scoreDataStore.inquiryToScoreList(inquiryStudentId,inquirySubjectId);
+                    System.out.println("========== " + StudentName + " 수강생의 " + SubjectName + " 과목 점수 조회 결과 ==========" );
+                    scoreDataStore.inquiryToScoreList(studentId,subjectId);
                     break;
                 case 4:    // 수강생의 수강중인 과목들의 평균 등급 조회
                     Student s4;
@@ -630,13 +873,21 @@ public class Main {
                     System.out.println();
 
                     // 학생 ID 입력
-                    System.out.println("점수를 조회할 수강생의 고유번호를 입력해주세요.");
-                    int avgInquiryStudentId = sc.nextInt();
+                    while (true) {
+                        try {
+                            System.out.println("점수를 조회할 수강생의 고유번호를 입력해주세요.");
+                            studentId = sc.nextInt();
+                            break;
+                        } catch (InputMismatchException e) {
+                            System.out.println("잘못된 입력입니다. 숫자로 입력해주세요.");
+                            sc.nextLine();
+                        }
+                    }
 
                     // 입력된 student ID의 studentList 등록 여부를 boolean 타입 변수에 결과 저장
                     boolean avgInquiryVerificationId = false;
                     for (Student tempStudent : studentDataStore.getDataStore()) {
-                        if (tempStudent.getStudentId() == avgInquiryStudentId) {
+                        if (tempStudent.getStudentId() == studentId) {
                             avgInquiryVerificationId = true;
                             break;
                         }
@@ -648,22 +899,19 @@ public class Main {
                         break;
                     }
 
-                    // 정보제공용 학생/과목 이름 변수 저장
-                    String avgInquiryInformStudentName = "";
-
                     // 학생 이름 저장
                     for(int i=0; i < studentDataStore.getDataStore().size(); i++){
                         Student student1 = studentDataStore.getDataStore().get(i);
-                        if (student1.getStudentId() == avgInquiryStudentId) {
-                            avgInquiryInformStudentName = student1.getStudentName();
+                        if (student1.getStudentId() == studentId) {
+                            StudentName = student1.getStudentName();
                             break;
                         }
                     }
 
-                    System.out.println("========== " + avgInquiryInformStudentName + " 수강생의 수강중인 과목 평균 등급" + " ==========");
+                    System.out.println("========== " + StudentName + " 수강생의 수강중인 과목 평균 등급" + " ==========");
                     for(int i=0; i < scoreDataStore.getDataStore().size(); i++) {
                         Score score = scoreDataStore.getDataStore().get(i);
-                        if (score.getStudentId() == avgInquiryStudentId) {
+                        if (score.getStudentId() == studentId) {
                             for (int j=0; j < subjectDataStore.getDataStore().size(); j++) {
                                 Subject subject = subjectDataStore.getDataStore().get(j);
                                 if (score.getSubjectid() == subject.getSubjectId()) {
